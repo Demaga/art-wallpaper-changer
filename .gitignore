@@ -1,0 +1,6 @@
+.ve
+.python-version
+__pycache__
+*.jpeg
+object_example.json
+*.ipynb
