@@ -4,3 +4,6 @@ __pycache__
 *.jpeg
 object_example.json
 *.ipynb
+dist
+build
+*.spec
