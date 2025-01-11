@@ -1,6 +1,8 @@
 import ctypes
 import textwrap
 import time
+import sys
+import os
 
 import requests
 from google.cloud import storage
@@ -10,6 +12,11 @@ user32 = ctypes.windll.user32
 SCREEN_WIDTH = user32.GetSystemMetrics(0)
 SCREEN_HEIGHT = user32.GetSystemMetrics(1)
 
+
+if getattr(sys, "frozen", False):
+    FONT_FILE_PATH = os.path.join(sys._MEIPASS, "data/NotoSans-Medium.ttf")
+else:
+    FONT_FILE_PATH = "data/NotoSans-Medium.ttf"
 
 def resize_image_to_screen_width(image_path: str, output_path: str) -> None:
     with Image.open(image_path) as img:
@@ -27,24 +34,24 @@ def resize_image_to_screen_width(image_path: str, output_path: str) -> None:
             int((SCREEN_HEIGHT - resized_img.height) / 2),
         ),
     )
-    output_img.save(output_path)
+    output_img.save(output_path, subsampling=0, quality=100)
 
 
 def create_text_rectangle(
     text: str, max_width: int = 500, font_size: int = 20, padding: int = 20
 ) -> Image:
-    # Try to load Arial, fallback to default font if not available
     try:
-        font = ImageFont.truetype("arial.ttf", font_size)
-    except:
-        font = ImageFont.load_default(font_size)
-
+        font = ImageFont.truetype(FONT_FILE_PATH, font_size)
+    except Exception:
+        font = ImageFont.load_default().font_variant(size=font_size)
+    
     # Calculate maximum width for text
     usable_width = max_width - (2 * padding)
 
     # Calculate average character width using getlength
-    avg_char_width = font.getlength("x")
-    chars_per_line = max(1, int(usable_width / avg_char_width))
+    avg_char_width = font_size * 0.6  # Approximate width of a character
+    chars_per_line = int(usable_width / avg_char_width)
+    
     lines_by_charcount = textwrap.wrap(
         text, width=chars_per_line, break_long_words=True, replace_whitespace=False
     )
@@ -57,19 +64,14 @@ def create_text_rectangle(
     line_widths = []
     for line in lines:
         bbox = font.getbbox(line)
-        line_heights.append(bbox[3] - bbox[1] + 3)
+        line_heights.append(bbox[3] - bbox[1] + 5)
         line_widths.append(bbox[2] - bbox[0] + 5)
 
     text_height = sum(line_heights)
     text_width = max(line_widths)
 
-    # Calculate image dimensions maintaining 16:9 aspect ratio when possible
-    width = min(max_width, text_width + (2 * padding))
-    min_height = text_height + (2 * padding)
-
-    # Check if 16:9 aspect ratio would make the image too tall
-    aspect_height = int(width * 9 / 16)
-    height = max(min_height, aspect_height)
+    width = text_width + (2 * padding)
+    height = text_height + (2 * padding)
 
     # Create the actual image
     img = Image.new("RGB", (width, height), color=(237, 170, 71))
@@ -82,8 +84,7 @@ def create_text_rectangle(
     # Draw each line of text
     for i, line in enumerate(lines):
         bbox = font.getbbox(line)
-        x = 20
-        draw.text((x, current_y), line, font=font, fill="black")
+        draw.text((20, current_y), line, font=font, fill="black")
         current_y += line_heights[i]
 
     return img
@@ -93,7 +94,7 @@ def add_text_to_image(image_path: str, text: str) -> None:
     text_img = create_text_rectangle(text)
     with Image.open(image_path) as img:
         img.paste(text_img, box=(SCREEN_WIDTH - text_img.width - 200, 200))
-        img.save(image_path)
+        img.save(image_path, subsampling=0, quality=100)
 
 
 def download_public_file(

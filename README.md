@@ -6,7 +6,7 @@ Works for Windows only. Intended to run on system startup to replace wallpaper d
 
 Bundled to exe with PyInstaller. Command to bundle:
 
-`pyinstaller --noconsole --onefile --add-data="data/met_objects.json:data" main.py`
+`pyinstaller --noconsole --onefile --add-data="data/met_objects.json:data" --add-data="data/NotoSans-Medium.ttf:data"  main.py`
 
 # Credits
 

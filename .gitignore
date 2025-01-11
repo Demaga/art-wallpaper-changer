@@ -2,8 +2,11 @@
 .python-version
 __pycache__
 *.jpeg
+*.jpg
 object_example.json
 *.ipynb
 dist
 build
 *.spec
+*.csv
+*.json
