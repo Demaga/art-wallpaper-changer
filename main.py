@@ -4,7 +4,7 @@ import os
 from met import download_image, get_random_art
 from util import add_text_to_image, resize_image_to_screen_width
 
-img_path = os.environ["USERPROFILE"] + "/tmp.jpeg"
+img_path = os.environ["USERPROFILE"] + "/tmp.png"
 
 art = get_random_art()
 download_image(art, img_path)
