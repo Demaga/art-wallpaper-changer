@@ -10,6 +10,6 @@ Bundled to exe with PyInstaller. Command to bundle:
 
 # Credits
 
-Thanks to Metropolitan Art Museum for provided datasets, images and API! 
+- Thanks to Metropolitan Art Museum for provided datasets, images and API! https://metmuseum.github.io/
 
-https://metmuseum.github.io/
+- Thanks to Victoria and Albert Museum for provided images and API! https://developers.vam.ac.uk/guide/v2/welcome.html

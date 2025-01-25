@@ -3,6 +3,7 @@ import os
 import random
 import sys
 
+from models import Artwork
 from util import download_public_file
 
 OBJECTS_COUNT = 377_784
@@ -13,7 +14,7 @@ else:
     DATA_FILE_PATH = "data/met_objects.json"
 
 
-def get_random_art():
+def get_random_art() -> Artwork:
     random_object_id = random.randint(1, 377_784)
 
     with open(DATA_FILE_PATH, "r", encoding="utf-8") as f:
@@ -21,11 +22,21 @@ def get_random_art():
             if i == random_object_id:
                 break
     data = json.loads(line)
-    return data
+
+    artwork = Artwork(
+        url=data["blob_path"],
+        title=data.get("title", "").strip(),
+        culture=data.get("culture", "").strip(),
+        period=data.get("period", "").strip(),
+        artist=data.get("artist_display_name", "").strip(),
+        date=data.get("object_date", "").strip(),
+    )
+    return artwork
 
 
-def download_image(art, image_path):
-    blob_path = art["blob_path"]
+def download_image(art: Artwork, image_path: str) -> None:
+    """Downloads image from gcs (art.url) and saves it into image_path"""
+    blob_path = art.url
     download_public_file("gcs-public-data--met", blob_path, image_path)
 
 
