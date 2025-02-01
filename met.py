@@ -4,7 +4,7 @@ import random
 import sys
 
 from models import Artwork
-from util import download_public_file
+from util import download_public_file, safe_get
 
 OBJECTS_COUNT = 377_784
 
@@ -25,11 +25,11 @@ def get_random_art() -> Artwork:
 
     artwork = Artwork(
         url=data["blob_path"],
-        title=data.get("title", "").strip(),
-        culture=data.get("culture", "").strip(),
-        period=data.get("period", "").strip(),
-        artist=data.get("artist_display_name", "").strip(),
-        date=data.get("object_date", "").strip(),
+        title=safe_get(data, "title"),
+        culture=safe_get(data, "culture"),
+        period=safe_get(data, "period"),
+        artist=safe_get(data, "artist_display_name"),
+        date=safe_get(data, "object_date"),
     )
     return artwork
 

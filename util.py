@@ -130,3 +130,10 @@ def download_public_file(
                 f" bucket {bucket.name} to {destination_file_name}."
             )
         )
+
+
+def safe_get(d: dict, key: str) -> str:
+    val = d.get(key)
+    if not val:
+        return ""
+    return str(val).strip()

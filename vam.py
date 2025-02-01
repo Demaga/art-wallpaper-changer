@@ -1,6 +1,7 @@
 import requests
 
 from models import Artwork
+from util import safe_get
 
 
 def get_random_art() -> Artwork:
@@ -22,8 +23,8 @@ def get_random_art() -> Artwork:
             artist = artist["name"]
         artwork = Artwork(
             url=url_template.format(img_id=img_id),
-            title=data.get("_primaryTitle", "").strip(),
-            date=data.get("_primaryDate", "").strip(),
+            title=safe_get(data, "_primaryTitle"),
+            date=safe_get(data, "_primaryDate"),
             artist=artist,
         )
     return artwork
