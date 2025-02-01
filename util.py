@@ -18,6 +18,7 @@ if getattr(sys, "frozen", False):
 else:
     FONT_FILE_PATH = "data/NotoSans-Medium.ttf"
 
+
 def resize_image_to_screen_width(image_path: str, output_path: str) -> None:
     with Image.open(image_path) as img:
         resize_ratio = min(SCREEN_WIDTH / img.width, SCREEN_HEIGHT / img.height)
@@ -39,30 +40,35 @@ def resize_image_to_screen_width(image_path: str, output_path: str) -> None:
 
 def create_text_rectangle(
     text: str, max_width: int = 500, font_size: int = 20, padding: int = 20
-) -> Image:
+) -> Image.Image:
     try:
         font = ImageFont.truetype(FONT_FILE_PATH, font_size)
     except Exception:
         font = ImageFont.load_default().font_variant(size=font_size)
-    
+
     # Calculate maximum width for text
     usable_width = max_width - (2 * padding)
 
     # Calculate average character width using getlength
     avg_char_width = font_size * 0.6  # Approximate width of a character
     chars_per_line = int(usable_width / avg_char_width)
-    
-    lines_by_charcount = textwrap.wrap(
-        text, width=chars_per_line, break_long_words=True, replace_whitespace=False
-    )
-    lines = []
-    for line in lines_by_charcount:
-        lines.extend(line.split("\n"))
+
+    lines = text.split("\n")
+    output_lines = []
+    for line in lines:
+        output_lines.extend(
+            textwrap.wrap(
+                line,
+                width=chars_per_line,
+                break_long_words=True,
+                replace_whitespace=False,
+            )
+        )
 
     # Calculate text dimensions using getbbox
     line_heights = []
     line_widths = []
-    for line in lines:
+    for line in output_lines:
         bbox = font.getbbox(line)
         line_heights.append(bbox[3] - bbox[1] + 5)
         line_widths.append(bbox[2] - bbox[0] + 5)
@@ -82,7 +88,7 @@ def create_text_rectangle(
     current_y = (height - text_height) // 2
 
     # Draw each line of text
-    for i, line in enumerate(lines):
+    for i, line in enumerate(output_lines):
         bbox = font.getbbox(line)
         draw.text((20, current_y), line, font=font, fill="black")
         current_y += line_heights[i]
