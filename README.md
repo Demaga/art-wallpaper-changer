@@ -19,8 +19,8 @@ Images are saved into C:/Users/{user}/art_wallpapers. If needed, clean this fold
 
 **Wallpaper replacing script**:
 
-- Some global Python is required to run it. If you intend to use virtual environment, modify `set_wallpaper.cmd` to accomodate for this
-- Place `set_wallpaper.vbs` into Startup folder or scheduler its run with TaskScheduler. TaskScheduler is recommended for earlier start. Note extension - VBScript file kicks-off the whole thing. This way we avoid CMD terminal poping up on script run
+- Some global Python is required to run it. If you intend to use virtual environment, modify `set_wallpaper.vbs` to accomodate for this
+- Place `set_wallpaper.vbs` into Startup folder or scheduler its run with TaskScheduler. TaskScheduler is recommended for earlier start. Note extension - VBScript file contains in-line Python code
 
 # Credits
 
