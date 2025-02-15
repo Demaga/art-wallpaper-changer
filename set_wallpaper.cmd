@@ -1,1 +1,0 @@
-python C:\Users\user\Desktop\Projects\art-wallpaper-changer\set_wallpaper.py
