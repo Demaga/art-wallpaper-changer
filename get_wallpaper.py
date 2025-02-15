@@ -1,4 +1,6 @@
 from dotenv import load_dotenv
+import os
+import sys
 
 
 def get_env_path():
@@ -16,8 +18,6 @@ def get_env_path():
 load_dotenv(get_env_path())
 
 import ctypes
-import os
-import sys
 from random import choice
 from datetime import datetime
 
@@ -76,5 +76,4 @@ if not latest_img:
     set_wallpaper(wallpaper_path)
     create_wallpaper()  # generate second img for future run
 else:
-    set_wallpaper(img_dir + "/" + latest_img)
     create_wallpaper()
