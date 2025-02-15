@@ -39,7 +39,7 @@ def resize_image_to_screen_width(image_path: str, output_path: str) -> None:
 
 
 def create_text_rectangle(
-    text: str, max_width: int = 500, font_size: int = 20, padding: int = 20
+    text: str, max_width: int = 500, font_size: int = 22, padding: int = 20
 ) -> Image.Image:
     try:
         font = ImageFont.truetype(FONT_FILE_PATH, font_size)
@@ -96,10 +96,73 @@ def create_text_rectangle(
     return img
 
 
+def create_description_footer(text: str) -> Image.Image:
+    text = text.strip()
+    font_size = 18
+    padding = 40
+
+    try:
+        font = ImageFont.truetype(FONT_FILE_PATH, font_size)
+    except Exception:
+        font = ImageFont.load_default().font_variant(size=font_size)
+
+    # Calculate maximum width for text
+    usable_width = SCREEN_WIDTH - padding
+
+    # Calculate average character width using getlength
+    avg_char_width = font_size * 0.6  # Approximate width of a character
+    chars_per_line = int(usable_width / avg_char_width)
+
+    lines = textwrap.wrap(
+        text,
+        width=chars_per_line,
+        break_long_words=True,
+        replace_whitespace=False,
+    )
+
+    # Calculate text dimensions using getbbox
+    line_heights = []
+    for line in lines:
+        bbox = font.getbbox(line)
+        line_heights.append(bbox[3] - bbox[1] + 5)
+
+    text_height = sum(line_heights)
+
+    height = text_height + padding
+
+    # Create the actual image
+    img = Image.new("RGB", (SCREEN_WIDTH, height), color=(0, 0, 0))
+    draw = ImageDraw.Draw(img)
+    draw.fontmode = "L"
+
+    # Calculate starting Y position to center text vertically
+    current_y = (height - text_height) // 2
+
+    # Draw each line of text
+    for i, line in enumerate(lines):
+        bbox = font.getbbox(line)
+        draw.text((padding / 2, current_y), line, font=font, fill="white")
+        current_y += line_heights[i]
+
+    return img
+
+
 def add_text_to_image(image_path: str, text: str) -> None:
     text_img = create_text_rectangle(text)
     with Image.open(image_path) as img:
         img.paste(text_img, box=(SCREEN_WIDTH - text_img.width - 200, 200))
+        img.save(image_path, subsampling=0, quality=100)
+
+
+def add_description_footer_to_image(image_path: str, text: str) -> None:
+    footer_img = create_description_footer(text)
+    with Image.open(image_path) as img:
+        temp = img.copy()
+        temp.thumbnail((SCREEN_WIDTH, SCREEN_HEIGHT - footer_img.height))
+        background = Image.new("RGB", (SCREEN_WIDTH, SCREEN_HEIGHT), color=(250, 245, 232))
+        img.paste(background, box=(0, 0))
+        img.paste(temp, box=((SCREEN_WIDTH - temp.width) // 2, 0))
+        img.paste(footer_img, box=(0, SCREEN_HEIGHT - footer_img.height))
         img.save(image_path, subsampling=0, quality=100)
 
 
