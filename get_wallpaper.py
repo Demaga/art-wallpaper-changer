@@ -57,9 +57,13 @@ def create_wallpaper() -> str:
     # resize image
     edited_img_path = img_path.replace("_orig", "")
     resize_image_to_screen_width(img_path, edited_img_path)
-    add_text_to_image(edited_img_path, str(art))
-    description_footer = claude.generate_description(edited_img_path, str(art))
-    add_description_footer_to_image(edited_img_path, description_footer)
+    if len(art_str := str(art)) > 0:
+        add_text_to_image(edited_img_path, art_str)
+    try:
+        description_footer = claude.generate_description(edited_img_path, str(art))
+        add_description_footer_to_image(edited_img_path, description_footer)
+    except:
+        pass
 
     return edited_img_path
 
