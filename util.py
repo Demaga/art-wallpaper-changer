@@ -65,18 +65,21 @@ def create_text_rectangle(
             )
         )
 
-    # Calculate text dimensions using getbbox
-    line_heights = []
-    line_widths = []
+    # Calculate text dimensions
+    line_bbox = font.getbbox("Aghy")
+    single_line_height = line_bbox[3] - line_bbox[1]
+    line_spacing = single_line_height + 7
+
+    text_height = len(output_lines) * line_spacing - 7
+    
+    # Замінила getbbox на getlength для більш точного розрахунку ширини
+    max_line_width = 0
     for line in output_lines:
-        bbox = font.getbbox(line)
-        line_heights.append(bbox[3] - bbox[1] + 5)
-        line_widths.append(bbox[2] - bbox[0] + 5)
+        line_width = font.getlength(line)
+        if line_width > max_line_width:
+            max_line_width = line_width
 
-    text_height = sum(line_heights)
-    text_width = max(line_widths)
-
-    width = text_width + (2 * padding)
+    width = int(max_line_width) + (2 * padding)
     height = text_height + (2 * padding)
 
     # Create the actual image
@@ -91,7 +94,7 @@ def create_text_rectangle(
     for i, line in enumerate(output_lines):
         bbox = font.getbbox(line)
         draw.text((20, current_y), line, font=font, fill="black")
-        current_y += line_heights[i]
+        current_y += line_spacing
 
     return img
 
